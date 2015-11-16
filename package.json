@@ -1,0 +1,23 @@
+{
+  "name": "AHWarehouse",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha test"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "connect-flash": "^0.1.1",
+    "express-session": "^1.11.2",
+    "mysql": "^2.7.0",
+    "passport": "^0.2.2",
+    "passport-local": "^1.0.0",
+    "bcrypt-nodejs": "0.0.3",
+    "mocha": "*",
+    "should": "*"
+  }
+}

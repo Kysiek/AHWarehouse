@@ -1,0 +1,30 @@
+addons:
+  ssh_known_hosts:
+  - 46.101.136.26
+  apt:
+    packages:
+    - sshpass
+env:
+    global:
+        - secure: "NS8EDaVlvzcgEFZvCmRqYcfn0PfgTIkNsrY2Hr3JmnbX/kXMCsQUIitFN9djGF9W252uVX3csXl8k1vv7TfZ0sV6zir4XaIBDs/42XFjOEE2rmZmW+xG1G3vbSpoJd1JnV3zsjBQ8x7v2+d5R56SmTjevwDYjLxenFdBkosHKURoryg/POORwUqxZiA7C8/63IkSgNBVHazXjrLfqv1zKFadM6uRKB/4D4a7/0QLxFf1Eflojqx5/ftHdbmmMBW7IFZSzXvZCq3OZH8MscnUddbyoZGVmse6I9Yf2ou5OYDHQX8sOJnHuWMCWUXoBFgQEO/mrVGyZJ2LKxl4cnTweaxNhtWsrzP0INGaPBBHg8+BcB4vndsdWESx9XGace6ZljUjdxj7JU33SVhlAKRP3k1Mx6tsS7cRA8JD8q6EzwIF4NY6j0TvLvDokiDz5B8s0wkOrmjvkfrBhlPz8xdSons/r+SZpfuR8xxHwS3lfvCW8MgobpmNH/gosz2+lQslahh3537N7DQOpAH1wsZpa0Zn1Xzzn7lcC8aDQP3PE5CxpxBSlIE/W5Y/fbhTWkZqzg/9Cs4DYwdre1KkSqyY0yTSSkYO1od41s1cxusYNN0Gz6J67jkc1Ww4l5S3+/BjewNLztdKyQoc+FmOQmvlOYyAHuu4Pd4i0slQJWlqupg="
+        - secure: "ISkASUvw3c+M80q4HG8mhBuSfjfjgoF4BtvT77qfOQikDSjS93gOKHtwJGfycxcsMoC43bp/IbhPREcimL5BlPHQUThTJFWiaJqvfrHvWXuhxjUxcOkXuZa4BxpAtJB8wyedKjlk5k7Q3V9crOEclcN24RZzaMfD4Oe6fS7dKV7cK7XUxhgrHQs3018+5NeImaI62f/wa5MdIu2Mr+9etBbJziKOhREtFXECkAaApO8+UJ24tbj3CPKsIo6+cEgqHBl/3vr3c+5I9SCjRx8GPqEWZTreYAka1P5O1Pm2Wu4KNxTt9VoXnN/XYVPZaS1Xe0DF3Jg3xWlQ8ioZDWEDgyC8Cvdnrdb3JakBi2dGf2kvQNj5uctwwzOWltZ0NlDfCzR6XEGKIKsKqV9Sq56oCRiqpYncfGzuXypyfspuuLXsGkgM4N7LJH8z/8SZOcPEUj+8B7DlnWJW31Cgxith2xCu7oZ/97pwfX9aBeWbZsQW/pNsIiYa4ohpHH+uuxXrrVmYOLpDLgvIr0jxt/czTtfSMEh4tZATMfi3OuD2FIjw0O2W2+VJsoImL+Iigs8zVwSRbU7vJhZwQyIECw+MsJf4ct/zNMh2YjV9/64+3wWOMkqTdw28LHE23+nRbU7BXd0Jp5KkAlf/2gFdm2VYmIIMxojADKdn5YYbHlZ58j8="
+        - secure: "To/bvRkzswa8AlWoHs/RuPWT/L52XqOh76apX8jq2jM3yWZWYRVH6Yvu7u3A2S0sGxjfgwMiXdMKg3nC6WqL4cIyixZqQRyKrPSM6voN800q9vRJ58kbO35vi771HZByKaLZXFtERiGYhNTbQ+G4+c++5TLtq2V0H1x/kdyK78mkohZLgC2VX3zpBVrD51yIikCfMhAu3RlcaVjDlbxUUTxwndTgGJxVdaGPREbBxaL5eIEL2/PREq/K2jzSppLY+jimYcLpYB5ZwQUVoXp3hwDjiO+a1plWHUXJLxvkjUO3RManrZ3clMpOb82tWO42W56WAOwBgoS6R1NNPn0QvrVRbFnVC20WlybK6iXJnJPh3H9EuqKtf+zb4g235YGM/wSUaEnMUKAix7IZ1dVxmP0MA5SDYr9rkmea2nMPQo0MBfEmvJrLw741JLRcew6hDZY1zRPAtTwTHiEc9j0boEuY2jAFSBjsbCS8wBhMBPDazenwPF0po7RxmPwBmI803pfRkacvmtYjEouF6AdhZtEtKuPdESYLDni4ystYEH+T1Ee8euabNxMpWQeAmdiGJOsd2kxiX6o3bikBxNvN7li7PTHNac/HOhZRnCkpwG09ogT57Xmn4NvYE8/fI0ta4lAXeaKYNJLcgpHJ2Itcp8KzBqmnBAtYU8ScPaK7ahE="
+        - secure: "R6Xsj/H2BWWx9wODQ5iWvhjWa2hAHL4PjP82Sd6F8y3UQqhjAAVEU/XuVO593YYsVU/xx7+hx8oEwZ7lCBXZGT+YKEDyQRm51IfG6TzYzLYD/C+lmnWh7UepT+GdgbmoMTc2tn6TxUQUkPT0X60HHPmwVz9pnINnWSwlVHBcJn/yeodNBL5OtpLijrOKAFKpK4Vp/n4CSC2qAM1JTKKM1YQB8YEVGCcsGJnv1UIEkO/3IVIUDwxaPaCo0zQYRyuh4xwO/mAM5KvdfNcxhbmfmz2tcGiPGbDywRiDskY54fjPyveOTcD1xOJNySMH7oGOT6yCyKKOB0tvxHk9hvS5hcjwHIaKnhMiwHqSf7f7uOPR9gSmZngbpf8BrSaurTpG/a0t/fLbje4M96r0YGL4CB4OkEu82THa9W898PgCbaBQF/7dpLEyZbL/gbf+cCoxUk3sFBzmY/LTOE9Q4QrF4O/wf3LAqvC7F7WWF579c4/2ZE05TQ+nc4mIc0hxYoJQCbNK8qTo6rY4LB1OprFsTqOXJobaZxJ8IGUk3eFl4NiJzARGjWq5L16Ok4GazBKlQKGUCH37NOikHSjxhaB573uWBLjxqhuWG6JUO48Aah/baMmQUlAbngWHGRP01dYlKNq8DPHKXDAxSJz0NDGe/5hyjTt+kB6pPMZRcAMTqZw="
+language: node_js
+node_js:
+- '4.1'
+branches:
+  only:
+    - release
+
+install: npm install
+before_script:
+- mysql -u root < ./database/schema.sql
+- npm install -g mocha
+after_success:
+- mkdir build
+- mv * build
+- tar -czf package.tgz build
+- export SSHPASS=$DEPLOY_PASS
+- sshpass -e scp -o stricthostkeychecking=no package.tgz root@$DEPLOY_HOST:/home/kysiek/AHWarehouse
+- sshpass -e ssh root@$DEPLOY_HOST /home/kysiek/AHWarehouse/deploy.sh
