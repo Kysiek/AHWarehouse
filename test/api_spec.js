@@ -25,7 +25,7 @@ describe("Main API", function () {
     });
     after(function () {
         after(function(done) {
-            connection.query('DELETE FROM user WHERE username = ?', [username], function (err, rows) {
+            connection.query('DELETE FROM User WHERE username = ?', [username], function (err, rows) {
                 assert.ok(err === null, err);
                 connection.end();
                 done();
