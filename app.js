@@ -1,6 +1,7 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     Membership = require('./services/membership/index'),
+    CatalogueManagement = require('./services/catalogueManagement/index'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     passport = require('passport'),
@@ -9,10 +10,10 @@ var express = require('express'),
     assert = require('assert'),
     flash = require('connect-flash'),
     config = require('./config/config');
-    config = require('./config/config');
 
 var app = express();
 var membership;
+var catalogueManagement;
 
 connection = mysql.createConnection({host: config.DB_HOST, user: config.DB_USER, password: config.DB_PASSWORD, database: config.DB_NAME}, function (err, result) {
     assert(err == null, "Could not connect to the Database");
@@ -22,17 +23,17 @@ connection.connect(function (err) {
     assert(err == null, "Could not connect to the Database");
     console.log("Connected successfully to the database");
     membership = new Membership(connection);
+    catalogueManagement = new CatalogueManagement(connection);
 });
 
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 80;
 
 passport.use(new LocalStrategy({
         usernameField: 'username',
         passwordField: 'password'
     },
     function(username, password, done) {
-        console.log("Szukanie uzytkownika: " + username + " " + password);
         membership.authenticate(username, password, function (err, authResult) {
             if(authResult.success) {
                 done(null, authResult.user);
@@ -64,6 +65,7 @@ app.use(passport.session());
 app.use(flash());
 
 var userRouter = express.Router();
+var catalogueManagementRoute = express.Router();
 
 userRouter.route('/register')
     .post(function (req, res) {
@@ -103,7 +105,20 @@ userRouter.route('/logout')
         req.logout();
         res.status(200).end();
     });
+
+catalogueManagementRoute.route('')
+    .post(ensureAuthenticated, function(req, res) {
+        var bodyArgs = req.body;
+        catalogueManagement.addCatalogue(bodyArgs.name, bodyArgs.parentId, bodyArgs.type, req.user, function(err, result) {
+            if(result.success) {
+                res.status(200).end();
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
 app.use('/user', userRouter);
+app.use('/directory', catalogueManagementRoute);
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }

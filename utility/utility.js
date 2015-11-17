@@ -12,3 +12,13 @@ exports.randomString = function(stringLength){
     return result;
 
 };
+exports.createNewRootPathForRootPathAndSubDir = function(rootPath, subDirectory) {
+    var array = [];
+    if(rootPath) {
+        array = JSON.parse(rootPath);
+        array.push(subDirectory);
+    } else {
+        array.push(subDirectory);
+    }
+    return JSON.stringify(array);
+};

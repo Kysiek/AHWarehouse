@@ -40,7 +40,7 @@ describe("Registration", function () {
 
         });
         after(function(done) {
-            connection.query('DELETE FROM user WHERE username = ?', [username], function (err, rows) {
+            connection.query('DELETE FROM User WHERE username = ?', [username], function (err, rows) {
                 assert.ok(err === null, err);
                 done();
             });
@@ -114,7 +114,7 @@ describe("Registration", function () {
 
         });
         after(function(done) {
-            connection.query('DELETE FROM user WHERE username = ?', [username], function (err, rows) {
+            connection.query('DELETE FROM User WHERE username = ?', [username], function (err, rows) {
                 assert.ok(err === null, err);
                 done();
             });
