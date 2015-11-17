@@ -35,7 +35,6 @@ passport.use(new LocalStrategy({
         passwordField: 'password'
     },
     function(username, password, done) {
-        console.log("Szukanie uzytkownika: " + username + " " + password);
         membership.authenticate(username, password, function (err, authResult) {
             if(authResult.success) {
                 done(null, authResult.user);
