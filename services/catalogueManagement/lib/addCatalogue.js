@@ -46,7 +46,7 @@ var AddCatalogue = function(dbConnection) {
         }
     };
     var checkSuperiorCatalogueExist = function(addCatalogueResult) {
-        dbConnection.query('SELECT * FROM directory WHERE id = ?',
+        dbConnection.query('SELECT * FROM Directory WHERE id = ?',
             [addCatalogueResult.args.parentId],
             function (err, rows) {
                 if(err) {
@@ -65,7 +65,7 @@ var AddCatalogue = function(dbConnection) {
             });
     };
     var checkForNameDuplicates = function(addCatalogueResult) {
-        dbConnection.query("SELECT * FROM directory WHERE name = ? AND rootPath LIKE '%?]'",
+        dbConnection.query("SELECT * FROM Directory WHERE name = ? AND rootPath LIKE '%?]'",
             [addCatalogueResult.args.name,addCatalogueResult.supCatalogue.id],
             function (err, rows) {
                 if(err) {
@@ -94,13 +94,13 @@ var AddCatalogue = function(dbConnection) {
     };
 
     var insertCatalogueIntoDB = function(addCatalogueResult) {
-        dbConnection.query('INSERT INTO directory SET ?', addCatalogueResult.catalogue, function(err, result) {
+        dbConnection.query('INSERT INTO Directory SET ?', addCatalogueResult.catalogue, function(err, result) {
             if(err) {
                 addCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
                 self.emit("add-catalogue-invalid", addCatalogueResult);
                 return;
             }
-            dbConnection.query('SELECT * FROM directory WHERE id = ?', [result.insertId], function (err, rows) {
+            dbConnection.query('SELECT * FROM Directory WHERE id = ?', [result.insertId], function (err, rows) {
                 if(err) {
                     addCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
                     self.emit("add-catalogue-invalid", addCatalogueResult);

@@ -10,7 +10,6 @@ var express = require('express'),
     assert = require('assert'),
     flash = require('connect-flash'),
     config = require('./config/config');
-    config = require('./config/config');
 
 var app = express();
 var membership;

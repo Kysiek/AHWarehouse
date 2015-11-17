@@ -32,7 +32,7 @@ describe('Add catalogue', function () {
         });
     });
     after(function (done) {
-        connection.query('DELETE FROM user WHERE username = ?', [username], function (err, rows) {
+        connection.query('DELETE FROM User WHERE username = ?', [username], function (err, rows) {
             assert.ok(err === null, err);
             connection.end();
             done();
@@ -55,7 +55,7 @@ describe('Add catalogue', function () {
             );
         });
         after(function(done) {
-            connection.query('DELETE FROM directory WHERE id = ?', [addedCatalogueResult.catalogue.id], function (err, rows) {
+            connection.query('DELETE FROM Directory WHERE id = ?', [addedCatalogueResult.catalogue.id], function (err, rows) {
                 assert.ok(err === null, err);
                 done();
             });
@@ -108,7 +108,7 @@ describe('Add catalogue', function () {
             );
         });
         after(function(done) {
-            connection.query('DELETE FROM directory WHERE id = ?', [addedCatalogueFirstResult.catalogue.id], function (err, rows) {
+            connection.query('DELETE FROM Directory WHERE id = ?', [addedCatalogueFirstResult.catalogue.id], function (err, rows) {
                 assert.ok(err === null, err);
                 done();
             });
