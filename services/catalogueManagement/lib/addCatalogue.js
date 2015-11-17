@@ -25,7 +25,7 @@ var AddCatalogue = function(dbConnection) {
 
     var validateArguments = function(addCatalogueResult) {
         if(!addCatalogueResult.user) {
-            addCatalogueResult.message = "Pole uzytkownik nie mo¿e byc puste";
+            addCatalogueResult.message = "Pole uzytkownik nie moze byc puste";
             self.emit("add-catalogue-invalid", addCatalogueResult);
         } else if(!addCatalogueResult.args.name) {
             addCatalogueResult.message = "Nie podano nazwy katalogu";
@@ -131,7 +131,7 @@ var AddCatalogue = function(dbConnection) {
     };
 
     //Add catalogue path
-    self.on("add-wallet-request-received", validateArguments);
+    self.on("add-catalogue-request-received", validateArguments);
     self.on("arguments-ok", checkSuperiorCatalogueExist);
     self.on("subCatalogue-ok", checkForNameDuplicates);
     self.on("name-ok", createCatalogueObject);
@@ -143,7 +143,7 @@ var AddCatalogue = function(dbConnection) {
     self.add = function (args, user, next) {
         continueWith = next;
         var addCatalogueResult = new AddCatalogueResult(args, user);
-        self.emit("add-wallet-request-received", addCatalogueResult);
+        self.emit("add-catalogue-request-received", addCatalogueResult);
     };
 };
 util.inherits(AddCatalogue, Emitter);

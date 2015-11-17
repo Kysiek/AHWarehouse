@@ -22,3 +22,7 @@ exports.createNewRootPathForRootPathAndSubDir = function(rootPath, subDirectory)
     }
     return JSON.stringify(array);
 };
+exports.createInStatementForArray = function(rootPath) {
+    var array = JSON.parse(rootPath);
+    return "(" + array.join() + ")"
+};
