@@ -26,7 +26,6 @@ describe("Authentication", function () {
 
             reg.applyForMembership({username: username, password: password }, function (err, result) {
                 regResult = result;
-                console.log(regResult);
                 done();
             });
         });
@@ -44,7 +43,6 @@ describe("Authentication", function () {
             auth.authenticate({username: username, password: password}, function (err, result) {
                 assert.ok(err === null, err);
                 authResult = result;
-                console.log(authResult);
                 done();
             });
 

@@ -125,6 +125,7 @@ catalogueManagementRoute.route('/root')
             }
         });
     });
+
 catalogueManagementRoute.route('/:catalogueId')
     .get(ensureAuthenticated, function(req, res) {
         catalogueManagement.getCatalogue(req.user, req.params.catalogueId, function(err, result) {
@@ -135,6 +136,19 @@ catalogueManagementRoute.route('/:catalogueId')
             }
         });
     });
+
+catalogueManagementRoute.route('/access/grant')
+    .post(ensureAuthenticated, function(req, res) {
+        var bodyArgs = req.body;
+        catalogueManagement.grantAccess(bodyArgs.username, bodyArgs.directoryId, function(err, result) {
+            if(result.success) {
+                res.status(200).end();
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
+
 app.use('/user', userRouter);
 app.use('/directory', catalogueManagementRoute);
 
