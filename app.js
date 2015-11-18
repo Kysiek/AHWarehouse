@@ -69,8 +69,6 @@ var catalogueManagementRoute = express.Router();
 
 userRouter.route('/register')
     .post(function (req, res) {
-        console.log(req.body);
-        console.log(req.params);
         var bodyArgs = req.body;
         membership.register(bodyArgs.username, bodyArgs.password, function (err, result) {
             if(result.success) {
@@ -112,6 +110,26 @@ catalogueManagementRoute.route('')
         catalogueManagement.addCatalogue(bodyArgs.name, bodyArgs.parentId, bodyArgs.type, req.user, function(err, result) {
             if(result.success) {
                 res.status(200).end();
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
+catalogueManagementRoute.route('/root')
+    .get(ensureAuthenticated, function(req, res) {
+        catalogueManagement.getCatalogue(req.user, 1, function(err, result) {
+            if(result.success) {
+                res.status(200).json(result.result);
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
+catalogueManagementRoute.route('/:catalogueId')
+    .get(ensureAuthenticated, function(req, res) {
+        catalogueManagement.getCatalogue(req.user, req.params.catalogueId, function(err, result) {
+            if(result.success) {
+                res.status(200).json(result.result);
             } else {
                 res.status(500).json({message: result.message});
             }

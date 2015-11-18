@@ -94,10 +94,33 @@ var GetCatalogue = function(dbConnection) {
                     return;
                 }
                 getCatalogueResult.subCatalogues = [];
+                var privateSubDirs = [];
                 for(var i = 0, x = rows.length; i < x; i++) {
-                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id});
+                    if(config.PUBLIC_DIR_STRING === config.ID_DIR_TYPE_MAP[rows[i].typeId] || rows[i].ownerUserId === getCatalogueResult.user.id) {
+                        getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                    } else {
+                        privateSubDirs.push(rows[i]);
+                    }
+
                 }
-                self.emit("subcatalogues-got", getCatalogueResult);
+                if(privateSubDirs.length > 0) {
+                    console.log("Prywatne: " + utility.createInStatementFromCatalogueArray(privateSubDirs));
+                    dbConnection.query("SELECT d.id, d.name, d.typeId  FROM AccessToDirectory ad INNER JOIN Directory d ON d.id = ad.directoryId WHERE ad.userId = ? AND d.id IN " + utility.createInStatementFromCatalogueArray(privateSubDirs),
+                        [getCatalogueResult.user.id],
+                        function (err, rows) {
+                            if(err) {
+                                getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                                self.emit("get-catalogue-invalid", getCatalogueResult);
+                                return;
+                            }
+                            for(var i = 0, x = rows.length; i < x; i++) {
+                                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                            }
+                            self.emit("subcatalogues-got", getCatalogueResult);
+                        });
+                } else {
+                    self.emit("subcatalogues-got", getCatalogueResult);
+                }
 
             });
     };
@@ -107,7 +130,17 @@ var GetCatalogue = function(dbConnection) {
         getCatalogueResult.success = true;
         self.emit("get-catalogue-ok", getCatalogueResult);
         if(continueWith) {
-            continueWith(null, getCatalogueResult);
+            continueWith(null, {
+                result: {
+                    name: getCatalogueResult.mainCatalogue.name,
+                    id: getCatalogueResult.mainCatalogue.id,
+                    type: config.ID_DIR_TYPE_MAP[getCatalogueResult.mainCatalogue.typeId],
+                    pathToDirectory: getCatalogueResult.pathToCatalogue,
+                    subDirectories: getCatalogueResult.subCatalogues
+                },
+                message : getCatalogueResult.message,
+                success: getCatalogueResult.success
+            });
         }
     };
 
@@ -122,7 +155,7 @@ var GetCatalogue = function(dbConnection) {
     //Add catalogue path
     self.on("get-request-received", validateArguments);
     self.on("arguments-ok", getMainCatalogueFromDB);
-    self.on("get-rootPath-to-main-catalogue", getRootPath);
+    self.on("main-catalogue-got", getRootPath);
     self.on("path-to-catalogue-got", getSubCatalogues);
     self.on("subcatalogues-got", getCatalogueOk);
 

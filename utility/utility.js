@@ -26,3 +26,10 @@ exports.createInStatementForArray = function(rootPath) {
     var array = JSON.parse(rootPath);
     return "(" + array.join() + ")"
 };
+exports.createInStatementFromCatalogueArray = function(cataloguesArray) {
+    var array = [];
+    for(var i = 0, x = cataloguesArray.length; i < x; i++) {
+        array.push(cataloguesArray[i].id);
+    }
+    return "(" + array.join() + ")"
+};

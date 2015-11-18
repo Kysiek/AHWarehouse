@@ -12,5 +12,9 @@ module.exports = {
     DIR_TYPE_MAP : {
         "Publiczny": 1,
         "Prywatny": 2
+    },
+    ID_DIR_TYPE_MAP : {
+        1: "Publiczny",
+        2: "Prywatny"
     }
 };

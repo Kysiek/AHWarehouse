@@ -1,5 +1,5 @@
 /**
- * Created by KMACIAZE on 27.10.2015.
+ * Created by KMACIAZE on 11.11.2015.
  */
 
 var AddCatalogue = require('../services/catalogueManagement/lib/addCatalogue');
