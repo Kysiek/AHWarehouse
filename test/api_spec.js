@@ -37,7 +37,6 @@ describe("Main API", function () {
         before(function (done) {
             memb.register(username, password, function (err, result) {
                 newUser = result.user;
-                console.log(result.message);
                 assert.ok(result.success, "Can't register");
                 done();
             });

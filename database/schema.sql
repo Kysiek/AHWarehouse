@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `AHWarehouse`.`Directory` (
   `rootPath` VARCHAR(1000) NULL DEFAULT NULL,
   `typeId` INT NOT NULL,
   `ownerUserId` INT NULL,
+  `readOnly` BOOLEAN DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `FK_directory_directoryType_idx` (`typeId` ASC),
   INDEX `FK_directory_user_idx` (`ownerUserId` ASC),
@@ -138,7 +139,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `AHWarehouse`;
-INSERT INTO `AHWarehouse`.`Directory` (`id`, `name`, `rootPath`, `typeId`, `ownerUserId`) VALUES (1, 'root', NULL, 1, NULL);
+INSERT INTO `AHWarehouse`.`Directory` (`id`, `name`, `rootPath`, `typeId`, `ownerUserId`, `readOnly`) VALUES (1, 'root', NULL, 1, NULL, 0);
 
 COMMIT;
 

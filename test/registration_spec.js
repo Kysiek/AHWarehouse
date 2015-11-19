@@ -34,7 +34,6 @@ describe("Registration", function () {
 
             reg.applyForMembership({username: username, password: password }, function (err, result) {
                 regResult = result;
-                console.log(regResult);
                 done();
             });
 

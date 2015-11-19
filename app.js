@@ -101,15 +101,11 @@ userRouter.route('/login')
     .get(ensureAuthenticated, function(req, res){
         res.status(200).json({user: req.user});
     });
-
-
-
 userRouter.route('/logout')
     .get(ensureAuthenticated, function(req, res){
         req.logout();
         res.status(200).end();
     });
-
 catalogueManagementRoute.route('')
     .post(ensureAuthenticated, function(req, res) {
         var bodyArgs = req.body;
@@ -141,7 +137,6 @@ catalogueManagementRoute.route('/:catalogueId')
             }
         });
     });
-
 catalogueManagementRoute.route('/:catalogueId/upload/')
     .post(ensureAuthenticated, function (req,res) {
         console.log(req.params.catalogueId);
@@ -158,6 +153,17 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
                 console.log("Upload Finished of " + filename);
                 res.redirect('back');           //where to go next
             });
+        });
+    });
+catalogueManagementRoute.route('/access/grant')
+    .post(ensureAuthenticated, function(req, res) {
+        var bodyArgs = req.body;
+        catalogueManagement.grantAccess(bodyArgs.username, bodyArgs.directoryId, function(err, result) {
+            if(result.success) {
+                res.status(200).end();
+            } else {
+                res.status(500).json({message: result.message});
+            }
         });
     });
 app.use('/user', userRouter);

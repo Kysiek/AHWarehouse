@@ -38,12 +38,11 @@ describe('Add catalogue', function () {
             done();
         });
     });
-    describe('correctly adds public catalogue under root catalogue', function() {
+    describe('correctly adds public catalogue under root catalogue without readOnly parametr', function() {
         var addedCatalogueResult;
         var catalogueName = 'Kyœka',
             catalogueParentId = 1,
-            catalogueType = 'Publiczny',
-            walletName = "Krysiasdddd1";
+            catalogueType = 'Publiczny';
 
         before(function(done) {
             addCatalogue.add({name: catalogueName, parentId:catalogueParentId, type:catalogueType},
@@ -83,6 +82,71 @@ describe('Add catalogue', function () {
         });
         it('created catalogue has an appropriate type', function () {
             addedCatalogueResult.catalogue.typeId.should.equal(config.DIR_TYPE_MAP[catalogueType]);
+        });
+        it('created catalogue false on readOnly field', function () {
+            addedCatalogueResult.catalogue.readOnly.should.equal(0);
+        });
+    });
+    describe('correctly adds public catalogue under root catalogue with readOnly as true', function() {
+        var addedCatalogueResult;
+        var catalogueName = 'Kyœka',
+            catalogueParentId = 1,
+            catalogueType = 'Publiczny';
+
+        before(function(done) {
+            addCatalogue.add({name: catalogueName, parentId:catalogueParentId, type:catalogueType, readOnly: true},
+                validUser,
+                function(err, result) {
+                    addedCatalogueResult = result;
+                    done();
+                }
+            );
+        });
+        after(function(done) {
+            connection.query('DELETE FROM Directory WHERE id = ?', [addedCatalogueResult.catalogue.id], function (err, rows) {
+                assert.ok(err === null, err);
+                done();
+            });
+        });
+        it('is successful', function () {
+            addedCatalogueResult.success.should.equal(true);
+        });
+        it('creates a catalogue in db', function () {
+            addedCatalogueResult.catalogue.id.should.be.defined;
+        });
+        it('created catalogue true on readOnly field', function () {
+            addedCatalogueResult.catalogue.readOnly.should.equal(1);
+        });
+    });
+    describe('correctly adds public catalogue under root catalogue with readOnly as undefined', function() {
+        var addedCatalogueResult;
+        var catalogueName = 'Kyœka',
+            catalogueParentId = 1,
+            catalogueType = 'Publiczny';
+
+        before(function(done) {
+            addCatalogue.add({name: catalogueName, parentId:catalogueParentId, type:catalogueType, readOnly: undefined},
+                validUser,
+                function(err, result) {
+                    addedCatalogueResult = result;
+                    done();
+                }
+            );
+        });
+        after(function(done) {
+            connection.query('DELETE FROM Directory WHERE id = ?', [addedCatalogueResult.catalogue.id], function (err, rows) {
+                assert.ok(err === null, err);
+                done();
+            });
+        });
+        it('is successful', function () {
+            addedCatalogueResult.success.should.equal(true);
+        });
+        it('creates a catalogue in db', function () {
+            addedCatalogueResult.catalogue.id.should.be.defined;
+        });
+        it('created catalogue false on readOnly field', function () {
+            addedCatalogueResult.catalogue.readOnly.should.equal(0);
         });
     });
     describe('does not allow to add two the same names under the same directory', function() {
@@ -144,7 +208,6 @@ describe('Add catalogue', function () {
     });
     describe('name not given', function() {
         var addedCatalogueResult,
-            catalogueName = 'Kyœka',
             catalogueParentId = 2,
             catalogueType = 'Publiczny';
 
@@ -167,7 +230,6 @@ describe('Add catalogue', function () {
     describe('parentId not given', function() {
         var addedCatalogueResult,
             catalogueName = 'Kyœka',
-            catalogueParentId = 2,
             catalogueType = 'Publiczny';
 
         before(function(done) {

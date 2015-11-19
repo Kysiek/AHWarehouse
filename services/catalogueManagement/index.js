@@ -6,6 +6,7 @@ var events = require("events");
 var util = require("util");
 var AddCatalogue = require("./lib/addCatalogue");
 var GetCatalogue = require("./lib/getCatalogue");
+var AddPermission = require("./lib/addPermission");
 var assert = require("assert");
 
 var CatalogueManagement = function (connection) {
@@ -36,7 +37,18 @@ var CatalogueManagement = function (connection) {
         });
         getCatalogue.get(user, catalogueId, next);
     };
+    self.grantAccess = function(username, catalogueId, next) {
+        var addPermission = new AddPermission(connection);
 
+
+        addPermission.on("access-ok", function (addPermissionResult) {
+            self.emit("access-ok", addPermissionResult)
+        });
+        addPermission.on("access-not-ok", function (addPermissionResult) {
+            self.emit("access-not-ok", addPermissionResult)
+        });
+        addPermission.add(username, catalogueId, next);
+    }
 };
 
 

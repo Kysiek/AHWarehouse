@@ -55,6 +55,29 @@ var GetCatalogue = function(dbConnection) {
 
             });
     };
+    var checkUserHasAccess = function(getCatalogueResult) {
+        if(config.ID_DIR_TYPE_MAP[getCatalogueResult.mainCatalogue.typeId] !== config.PUBLIC_DIR_STRING && getCatalogueResult.mainCatalogue.ownerUserId !=  getCatalogueResult.user.id) {
+            dbConnection.query("SELECT * FROM AccessToDirectory WHERE userId = ? and directoryId = ?",
+                [getCatalogueResult.user.id, getCatalogueResult.catalogueId],
+                function (err, rows) {
+                    if(err) {
+                        getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                        self.emit("get-catalogue-invalid", getCatalogueResult);
+                        return;
+                    }
+                    if(rows != undefined && rows.length !== 0) {
+                        self.emit("user-has-access", getCatalogueResult);
+                    }  else {
+                        getCatalogueResult.message = "Nie masz dostepu do tego katalogu";
+                        self.emit("get-catalogue-invalid", getCatalogueResult);
+                    }
+
+                });
+        } else {
+            self.emit("user-has-access", getCatalogueResult);
+        }
+    };
+
     var getRootPath = function(getCatalogueResult) {
 
         if(getCatalogueResult.mainCatalogue.rootPath) {
@@ -68,7 +91,7 @@ var GetCatalogue = function(dbConnection) {
                     if(rows != undefined && rows.length !== 0) {
                         getCatalogueResult.pathToCatalogue = [];
                         for(var i = 0, x = rows.length; i < x; i++) {
-                            getCatalogueResult.pathToCatalogue.push({name: rows[i].name, id: rows[i].id});
+                            getCatalogueResult.pathToCatalogue.push({name: rows[i].name, id: rows[i].id, readOnly: rows[i].readOnly == 0 ? false : true});
                         }
                         self.emit("path-to-catalogue-got", getCatalogueResult);
                     }  else {
@@ -85,8 +108,8 @@ var GetCatalogue = function(dbConnection) {
     };
     var getSubCatalogues = function(getCatalogueResult) {
 
-        dbConnection.query("SELECT * FROM Directory WHERE rootPath LIKE '%?]'",
-            [getCatalogueResult.mainCatalogue.id],
+        dbConnection.query("SELECT * FROM Directory WHERE rootPath LIKE '%,?]' OR rootPath LIKE '[?]'",
+            [getCatalogueResult.mainCatalogue.id,getCatalogueResult.mainCatalogue.id],
             function (err, rows) {
                 if(err) {
                     getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
@@ -97,14 +120,13 @@ var GetCatalogue = function(dbConnection) {
                 var privateSubDirs = [];
                 for(var i = 0, x = rows.length; i < x; i++) {
                     if(config.PUBLIC_DIR_STRING === config.ID_DIR_TYPE_MAP[rows[i].typeId] || rows[i].ownerUserId === getCatalogueResult.user.id) {
-                        getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                        getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId], readOnly: rows[i].readOnly == 0 ? false : true});
                     } else {
                         privateSubDirs.push(rows[i]);
                     }
 
                 }
                 if(privateSubDirs.length > 0) {
-                    console.log("Prywatne: " + utility.createInStatementFromCatalogueArray(privateSubDirs));
                     dbConnection.query("SELECT d.id, d.name, d.typeId  FROM AccessToDirectory ad INNER JOIN Directory d ON d.id = ad.directoryId WHERE ad.userId = ? AND d.id IN " + utility.createInStatementFromCatalogueArray(privateSubDirs),
                         [getCatalogueResult.user.id],
                         function (err, rows) {
@@ -114,7 +136,7 @@ var GetCatalogue = function(dbConnection) {
                                 return;
                             }
                             for(var i = 0, x = rows.length; i < x; i++) {
-                                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId], readOnly: rows[i].readOnly == 0 ? false : true});
                             }
                             self.emit("subcatalogues-got", getCatalogueResult);
                         });
@@ -135,6 +157,7 @@ var GetCatalogue = function(dbConnection) {
                     name: getCatalogueResult.mainCatalogue.name,
                     id: getCatalogueResult.mainCatalogue.id,
                     type: config.ID_DIR_TYPE_MAP[getCatalogueResult.mainCatalogue.typeId],
+                    readOnly: getCatalogueResult.mainCatalogue.readOnly == 0 ? false : true,
                     pathToDirectory: getCatalogueResult.pathToCatalogue,
                     subDirectories: getCatalogueResult.subCatalogues
                 },
@@ -155,7 +178,8 @@ var GetCatalogue = function(dbConnection) {
     //Add catalogue path
     self.on("get-request-received", validateArguments);
     self.on("arguments-ok", getMainCatalogueFromDB);
-    self.on("main-catalogue-got", getRootPath);
+    self.on("main-catalogue-got", checkUserHasAccess);
+    self.on("user-has-access", getRootPath);
     self.on("path-to-catalogue-got", getSubCatalogues);
     self.on("subcatalogues-got", getCatalogueOk);
 
