@@ -135,7 +135,7 @@ var AddPermission = function(dbConnection) {
     self.on("user-does-not-have-access", grantAccess);
     self.on("access-granted", grantPermissionOk);
 
-    self.on("add-catalogue-invalid", grantPermissionNotOk);
+    self.on("grant-permission-invalid", grantPermissionNotOk);
 
     self.add = function (username, catalogueId, next) {
         continueWith = next;
