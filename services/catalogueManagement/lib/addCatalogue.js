@@ -65,8 +65,8 @@ var AddCatalogue = function(dbConnection) {
             });
     };
     var checkForNameDuplicates = function(addCatalogueResult) {
-        dbConnection.query("SELECT * FROM Directory WHERE name = ? AND rootPath LIKE '%?]'",
-            [addCatalogueResult.args.name,addCatalogueResult.supCatalogue.id],
+        dbConnection.query("SELECT * FROM Directory WHERE name = ? AND (rootPath LIKE '%,?]' OR rootPath LIKE '[?]')",
+            [addCatalogueResult.args.name,addCatalogueResult.supCatalogue.id, addCatalogueResult.supCatalogue.id],
             function (err, rows) {
                 if(err) {
                     addCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";

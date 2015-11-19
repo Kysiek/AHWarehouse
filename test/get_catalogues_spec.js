@@ -64,20 +64,20 @@ describe('Get catalogues', function () {
                                             getCataloguesResult =  result4;
                                             addCatalogue.add({name: catalogueBName, parentId:catalogueUnderRootParentId, type:catalogueType},
                                                 validUser,
-                                                function(err4, result4) {
-                                                    catalogueBResult = result4;
+                                                function(err5, result5) {
+                                                    catalogueBResult = result5;
                                                     addCatalogue.add({name: catalogueBaName, parentId:catalogueBResult.catalogue.id, type:catalogueType},
                                                         validUser,
-                                                        function(err5, result5) {
-                                                            catalogueBaResult = result5;
+                                                        function(err6, result6) {
+                                                            catalogueBaResult = result6;
                                                             addCatalogue.add({name: catalogueBbName, parentId:catalogueBResult.catalogue.id, type:catalogueType},
                                                                 validUser,
-                                                                function(err6, result6) {
-                                                                    catalogueBbResult = result6;
+                                                                function(err7, result7) {
+                                                                    catalogueBbResult = result7;
                                                                     addCatalogue.add({name: catalogueAbaName, parentId:catalogueAbResult.catalogue.id, type:catalogueType},
                                                                         validUser,
-                                                                        function(err7, result7) {
-                                                                            catalogueAbaResult = result7;
+                                                                        function(err8, result8) {
+                                                                            catalogueAbaResult = result8;
                                                                             done();
                                                                         }
                                                                     );
@@ -145,12 +145,6 @@ describe('Get catalogues', function () {
         it('should has appropriate amount subDirectories', function () {
             getCataloguesResult.result.subDirectories.length.should.greaterThanOrEqual(2);
         });
-        it('should has appropriate subDirectories', function () {
-            getCataloguesResult.result.subDirectories[0].name.should.be.equal(catalogueAName);
-            getCataloguesResult.result.subDirectories[1].name.should.be.equal(catalogueBName);
-            getCataloguesResult.result.subDirectories[0].id.should.be.equal(catalogueAResult.catalogue.id);
-            getCataloguesResult.result.subDirectories[1].id.should.be.equal(catalogueBResult.catalogue.id);
-        });
     });
     describe('correctly gets public first level catalogue', function() {
         before(function(done) {
@@ -176,12 +170,6 @@ describe('Get catalogues', function () {
         });
         it('should has appropriate amount subDirectories', function () {
             getCataloguesResult.result.subDirectories.length.should.equal(2);
-        });
-        it('should has appropriate subDirectories', function () {
-            getCataloguesResult.result.subDirectories[0].name.should.be.equal(catalogueAaName);
-            getCataloguesResult.result.subDirectories[1].name.should.be.equal(catalogueAbName);
-            getCataloguesResult.result.subDirectories[0].id.should.be.equal(catalogueAaResult.catalogue.id);
-            getCataloguesResult.result.subDirectories[1].id.should.be.equal(catalogueAbResult.catalogue.id);
         });
     });
     describe('correctly gets public second level catalogue', function() {

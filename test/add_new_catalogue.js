@@ -42,8 +42,7 @@ describe('Add catalogue', function () {
         var addedCatalogueResult;
         var catalogueName = 'Kyœka',
             catalogueParentId = 1,
-            catalogueType = 'Publiczny',
-            walletName = "Krysiasdddd1";
+            catalogueType = 'Publiczny';
 
         before(function(done) {
             addCatalogue.add({name: catalogueName, parentId:catalogueParentId, type:catalogueType},

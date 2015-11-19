@@ -21,7 +21,6 @@ describe('Grant access', function () {
         password = 'pass',
         validUser,
         validUserSecond,
-        getCataloguesResult,
         catalogueUnderRootParentId = 1,
         catalogueAName = "xyxyxyxyxyxvb",
         catalogueBName = "xyxyxyxyxyxvbUnderRootSecond",
@@ -52,10 +51,10 @@ describe('Grant access', function () {
             addCatalogue = new AddCatalogue(connection);
             getCatalogue = new GetCatalogue(connection);
             addPermission = new AddPermission(connection);
-            membership.register(username, password, function (err, result) {
-                validUser = result.user;
-                membership.register(usernameSecond, password, function (err, result) {
-                    validUserSecond = result.user;
+            membership.register(username, password, function (err, res) {
+                validUser = res.user;
+                membership.register(usernameSecond, password, function (err, res2) {
+                    validUserSecond = res2.user;
                     addCatalogue.add({name: catalogueAName, parentId:catalogueUnderRootParentId, type:cataloguePublic},
                         validUser,
                         function(err, result) {
@@ -68,34 +67,31 @@ describe('Grant access', function () {
                                         validUser,
                                         function(err3, result3) {
                                             catalogueAbResult = result3;
-                                            getCatalogue.get(validUser,catalogueAResult.catalogue.id, function (err4, result4) {
-                                                getCataloguesResult =  result4;
-                                                addCatalogue.add({name: catalogueBName, parentId:catalogueUnderRootParentId, type:cataloguePrivate},
-                                                    validUser,
-                                                    function(err4, result4) {
-                                                        catalogueBResult = result4;
-                                                        addCatalogue.add({name: catalogueBaName, parentId:catalogueBResult.catalogue.id, type:cataloguePublic},
-                                                            validUser,
-                                                            function(err5, result5) {
-                                                                catalogueBaResult = result5;
-                                                                addCatalogue.add({name: catalogueBbName, parentId:catalogueBResult.catalogue.id, type:cataloguePrivate},
-                                                                    validUser,
-                                                                    function(err6, result6) {
-                                                                        catalogueBbResult = result6;
-                                                                        addCatalogue.add({name: catalogueAbaName, parentId:catalogueAbResult.catalogue.id, type:cataloguePrivate},
-                                                                            validUser,
-                                                                            function(err7, result7) {
-                                                                                catalogueAbaResult = result7;
-                                                                                done();
-                                                                            }
-                                                                        );
-                                                                    }
-                                                                );
-                                                            }
-                                                        );
-                                                    }
-                                                );
-                                            });
+                                            addCatalogue.add({name: catalogueBName, parentId:catalogueUnderRootParentId, type:cataloguePrivate},
+                                                validUser,
+                                                function(err5, result5) {
+                                                    catalogueBResult = result5;
+                                                    addCatalogue.add({name: catalogueBaName, parentId:catalogueBResult.catalogue.id, type:cataloguePublic},
+                                                        validUser,
+                                                        function(err6, result6) {
+                                                            catalogueBaResult = result6;
+                                                            addCatalogue.add({name: catalogueBbName, parentId:catalogueBResult.catalogue.id, type:cataloguePrivate},
+                                                                validUser,
+                                                                function(err7, result7) {
+                                                                    catalogueBbResult = result7;
+                                                                    addCatalogue.add({name: catalogueAbaName, parentId:catalogueAbResult.catalogue.id, type:cataloguePrivate},
+                                                                        validUser,
+                                                                        function(err8, result8) {
+                                                                            catalogueAbaResult = result8;
+                                                                            done();
+                                                                        }
+                                                                    );
+                                                                }
+                                                            );
+                                                        }
+                                                    );
+                                                }
+                                            );
                                         }
                                     );
                                 }
@@ -140,13 +136,13 @@ describe('Grant access', function () {
         before(function(done) {
             getCatalogue.get(validUserSecond,catalogueId, function (err, result) {
                 getCataloguesResult =  result;
-                addPermission.add(usernameSecond, catalogueBResult.catalogue.id, function (err, result) {
-                    assert(err === null, err);
-                    addPermissionResult =  result;
-                    getCatalogue.get(validUserSecond,catalogueId, function (err, result) {
-                        getCataloguesResultAfterGrantingAccess =  result;
-                        getCatalogue.get(validUserSecond,catalogueBResult.catalogue.id, function (err, result) {
-                            getCataloguesOfBChildrenResult =  result;
+                addPermission.add(usernameSecond, catalogueBResult.catalogue.id, function (err2, result2) {
+                    assert(err2 === null, err2);
+                    addPermissionResult =  result2;
+                    getCatalogue.get(validUserSecond,catalogueId, function (err3, result3) {
+                        getCataloguesResultAfterGrantingAccess =  result3;
+                        getCatalogue.get(validUserSecond,catalogueBResult.catalogue.id, function (err4, result4) {
+                            getCataloguesOfBChildrenResult =  result4;
                             done();
                         });
                     });
@@ -168,6 +164,9 @@ describe('Grant access', function () {
             addPermissionResult.message.should.equal('Dostęp dodany pomyslnie!');
         });
         it('before has access to the only one catalogue', function () {
+            if(getCataloguesResult.result.subDirectories.length > 1) {
+                console.log(getCataloguesResult.result.subDirectories)
+            }
             getCataloguesResult.result.subDirectories.length.should.equal(1);
         });
         it('before has access to the appropriate catalogue', function () {

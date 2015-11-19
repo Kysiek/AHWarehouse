@@ -108,8 +108,8 @@ var GetCatalogue = function(dbConnection) {
     };
     var getSubCatalogues = function(getCatalogueResult) {
 
-        dbConnection.query("SELECT * FROM Directory WHERE rootPath LIKE '%?]'",
-            [getCatalogueResult.mainCatalogue.id],
+        dbConnection.query("SELECT * FROM Directory WHERE rootPath LIKE '%,?]' OR rootPath LIKE '[?]'",
+            [getCatalogueResult.mainCatalogue.id,getCatalogueResult.mainCatalogue.id],
             function (err, rows) {
                 if(err) {
                     getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
