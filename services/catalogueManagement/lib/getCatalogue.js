@@ -91,7 +91,7 @@ var GetCatalogue = function(dbConnection) {
                     if(rows != undefined && rows.length !== 0) {
                         getCatalogueResult.pathToCatalogue = [];
                         for(var i = 0, x = rows.length; i < x; i++) {
-                            getCatalogueResult.pathToCatalogue.push({name: rows[i].name, id: rows[i].id});
+                            getCatalogueResult.pathToCatalogue.push({name: rows[i].name, id: rows[i].id, readOnly: rows[i].readOnly == 0 ? false : true});
                         }
                         self.emit("path-to-catalogue-got", getCatalogueResult);
                     }  else {
@@ -120,7 +120,7 @@ var GetCatalogue = function(dbConnection) {
                 var privateSubDirs = [];
                 for(var i = 0, x = rows.length; i < x; i++) {
                     if(config.PUBLIC_DIR_STRING === config.ID_DIR_TYPE_MAP[rows[i].typeId] || rows[i].ownerUserId === getCatalogueResult.user.id) {
-                        getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                        getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId], readOnly: rows[i].readOnly == 0 ? false : true});
                     } else {
                         privateSubDirs.push(rows[i]);
                     }
@@ -136,7 +136,7 @@ var GetCatalogue = function(dbConnection) {
                                 return;
                             }
                             for(var i = 0, x = rows.length; i < x; i++) {
-                                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId]});
+                                    getCatalogueResult.subCatalogues.push({name: rows[i].name, id: rows[i].id, type:config.ID_DIR_TYPE_MAP[rows[i].typeId], readOnly: rows[i].readOnly == 0 ? false : true});
                             }
                             self.emit("subcatalogues-got", getCatalogueResult);
                         });
@@ -157,6 +157,7 @@ var GetCatalogue = function(dbConnection) {
                     name: getCatalogueResult.mainCatalogue.name,
                     id: getCatalogueResult.mainCatalogue.id,
                     type: config.ID_DIR_TYPE_MAP[getCatalogueResult.mainCatalogue.typeId],
+                    readOnly: getCatalogueResult.mainCatalogue.readOnly == 0 ? false : true,
                     pathToDirectory: getCatalogueResult.pathToCatalogue,
                     subDirectories: getCatalogueResult.subCatalogues
                 },

@@ -139,6 +139,9 @@ describe('Get catalogues', function () {
         it('contains appropriate name', function () {
             getCataloguesResult.result.name.should.equal('root');
         });
+        it('contains false in readOnly', function () {
+            getCataloguesResult.result.readOnly.should.equal(false);
+        });
         it('should has appropriate rootPath', function () {
             getCataloguesResult.result.pathToDirectory.length.should.equal(0);
         });
@@ -168,6 +171,9 @@ describe('Get catalogues', function () {
         it('should has appropriate rootPath', function () {
             getCataloguesResult.result.pathToDirectory[0].name.should.equal('root');
         });
+        it('rootPath should has appropriate readOnly value', function () {
+            getCataloguesResult.result.pathToDirectory[0].readOnly.should.equal(false);
+        });
         it('should has appropriate amount subDirectories', function () {
             getCataloguesResult.result.subDirectories.length.should.equal(2);
         });
@@ -188,19 +194,22 @@ describe('Get catalogues', function () {
         it('contains appropriate name', function () {
             getCataloguesResult.result.name.should.equal(catalogueAbName);
         });
-        it('should has appropriate amount of rootPath', function () {
+        it('should have appropriate amount of rootPath', function () {
             getCataloguesResult.result.pathToDirectory.length.should.equal(2);
         });
-        it('should has appropriate rootPath', function () {
+        it('should have appropriate rootPath', function () {
             getCataloguesResult.result.pathToDirectory[0].name.should.equal('root');
             getCataloguesResult.result.pathToDirectory[1].name.should.equal(catalogueAName);
         });
-        it('should has appropriate amount subDirectories', function () {
+        it('should have appropriate amount subDirectories', function () {
             getCataloguesResult.result.subDirectories.length.should.equal(1);
         });
-        it('should has appropriate subDirectories', function () {
+        it('should have appropriate subDirectories', function () {
             getCataloguesResult.result.subDirectories[0].name.should.be.equal(catalogueAbaName);
             getCataloguesResult.result.subDirectories[0].id.should.be.equal(catalogueAbaResult.catalogue.id);
+        });
+        it('subdirs should have appropriate readOnly field', function () {
+            getCataloguesResult.result.subDirectories[0].readOnly.should.equal(false);
         });
     });
     describe('correctly gets public third level catalogue', function() {
