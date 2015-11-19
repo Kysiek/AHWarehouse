@@ -42,6 +42,9 @@ var AddCatalogue = function(dbConnection) {
                 addCatalogueResult.args.type !== config.PRIVATE_DIR_STRING) {
                 addCatalogueResult.args.type = config.PUBLIC_DIR_STRING;
             }
+            if(!addCatalogueResult.args.readOnly) {
+                addCatalogueResult.args.readOnly = false;
+            }
             self.emit("arguments-ok", addCatalogueResult);
         }
     };
@@ -87,7 +90,8 @@ var AddCatalogue = function(dbConnection) {
                 name: addCatalogueResult.args.name,
                 ownerUserId: addCatalogueResult.user.id,
                 typeId: config.DIR_TYPE_MAP[addCatalogueResult.args.type],
-                rootPath: utility.createNewRootPathForRootPathAndSubDir(addCatalogueResult.supCatalogue.rootPath,addCatalogueResult.supCatalogue.id)
+                rootPath: utility.createNewRootPathForRootPathAndSubDir(addCatalogueResult.supCatalogue.rootPath,addCatalogueResult.supCatalogue.id),
+                readOnly: addCatalogueResult.args.readOnly
             }
         );
         self.emit("catalogue-obj-created", addCatalogueResult);
@@ -96,6 +100,7 @@ var AddCatalogue = function(dbConnection) {
     var insertCatalogueIntoDB = function(addCatalogueResult) {
         dbConnection.query('INSERT INTO Directory SET ?', addCatalogueResult.catalogue, function(err, result) {
             if(err) {
+                console.log("B³¹d1: " + err);
                 addCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
                 self.emit("add-catalogue-invalid", addCatalogueResult);
                 return;

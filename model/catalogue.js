@@ -10,6 +10,7 @@ var Catalogue = function(args) {
     catalogue.ownerUserId = args.ownerUserId;
     catalogue.typeId = args.typeId;
     catalogue.rootPath = args.rootPath;
+    catalogue.readOnly = args.readOnly;
 
     return catalogue;
 };
