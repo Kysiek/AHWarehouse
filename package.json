@@ -18,6 +18,9 @@
     "passport-local": "^1.0.0",
     "bcrypt-nodejs": "0.0.3",
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "fs-extra": "0.26.2",
+    "connect-busboy": "0.0.2",
+    "path": "0.12.7"
   }
 }

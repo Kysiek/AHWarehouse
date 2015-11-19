@@ -9,7 +9,10 @@ var express = require('express'),
     mysql = require('mysql'),
     assert = require('assert'),
     flash = require('connect-flash'),
-    config = require('./config/config');
+    config = require('./config/config'),
+    fs = require('fs-extra'),
+    busboy = require('connect-busboy'), //middleware for form/file upload
+    path = require('path');
 
 var app = express();
 var membership;
@@ -51,6 +54,7 @@ passport.deserializeUser(function (token, done) {
     membership.findUserByToken(token, done);
 });
 app.use(bodyParser.json());
+app.use(busboy());
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
@@ -64,8 +68,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+
 var userRouter = express.Router();
 var catalogueManagementRoute = express.Router();
+var fileUploadRoute = express.Router();
 
 userRouter.route('/register')
     .post(function (req, res) {
@@ -135,6 +141,25 @@ catalogueManagementRoute.route('/:catalogueId')
             }
         });
     });
+
+catalogueManagementRoute.route('/:catalogueId/upload/')
+    .post(ensureAuthenticated, function (req,res) {
+        console.log(req.params.catalogueId);
+        var fstream;
+        req.pipe(req.busboy);
+        req.busboy.on('file', function (fieldname, file, filename) {
+            console.log("Uploading: " + filename);
+
+            //Path where image will be uploaded
+
+            fstream = fs.createWriteStream(__dirname + '/../public/' + filename);
+            file.pipe(fstream);
+            fstream.on('close', function () {
+                console.log("Upload Finished of " + filename);
+                res.redirect('back');           //where to go next
+            });
+        });
+    });
 app.use('/user', userRouter);
 app.use('/directory', catalogueManagementRoute);
 
@@ -144,5 +169,6 @@ function ensureAuthenticated(req, res, next) {
 }
 
 app.listen(port, function () {
+    console.log(__dirname);
     console.log('Running on PORT: ' + port);
 });
