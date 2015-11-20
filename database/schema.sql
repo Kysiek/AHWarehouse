@@ -113,7 +113,6 @@ CREATE TABLE IF NOT EXISTS `AHWarehouse`.`Resource` (
   `ownerUserId` INT NOT NULL,
   `directoryId` INT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `locationOnServer` VARCHAR(255) NOT NULL,
   `mimetype` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
