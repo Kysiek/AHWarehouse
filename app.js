@@ -12,7 +12,8 @@ var express = require('express'),
     config = require('./config/config'),
     fs = require('fs-extra'),
     busboy = require('connect-busboy'), //middleware for form/file upload
-    path = require('path');
+    path = require('path'),
+    mkdirp = require('mkdirp');
 
 var app = express();
 var membership;
@@ -145,12 +146,14 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
             var mimeType = req.headers["mimetype"];
             catalogueManagement.uploadFile(req.user, filename, req.params.catalogueId, mimeType, function(err, result) {
                 if(result.success) {
-
-                    var fstream = fs.createWriteStream(__dirname + '/../public/' + filename);
-                    file.pipe(fstream);
-                    fstream.on('close', function () {
-                        console.log("Upload Finished of " + filename);
-                        res.status(200).end();
+                    var cataloguePath = __dirname + '/../public/' + req.params.catalogueId + "/";
+                    mkdirp(cataloguePath, function(err) {
+                        var fstream = fs.createWriteStream(cataloguePath + filename);
+                        file.pipe(fstream);
+                        fstream.on('close', function () {
+                            console.log("Upload Finished of " + filename);
+                            res.status(200).end();
+                        });
                     });
                 } else {
                     console.log("Uploading failed: " +  result.message);

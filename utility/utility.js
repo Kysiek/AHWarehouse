@@ -33,3 +33,6 @@ exports.createInStatementFromCatalogueArray = function(cataloguesArray) {
     }
     return "(" + array.join() + ")"
 };
+exports.addPrefixWithUnderScoreToString = function(prefix, name) {
+    return prefix + "_" + name;
+};
