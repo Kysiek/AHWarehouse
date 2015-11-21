@@ -53,7 +53,7 @@ var UploadFile = function(dbConnection) {
     };
     var checkCatalogueNotReadOnly = function (uploadFileResult) {
         if(uploadFileResult.catalogue.readOnly && uploadFileResult.user.id !== uploadFileResult.catalogue.ownerUserId) {
-            uploadFileResult.message = "Nie można wykonań. Podany katalog jest tylko do odczytu a Ty nie jesteś jego właścicielem.";
+            uploadFileResult.message = "Nie można wykonac. Podany katalog jest tylko do odczytu a Ty nie jesteś jego właścicielem.";
             self.emit("upload-invalid", uploadFileResult);
         } else {
             self.emit("catalogue-not-read-only", uploadFileResult);

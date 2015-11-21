@@ -100,7 +100,6 @@ var AddCatalogue = function(dbConnection) {
     var insertCatalogueIntoDB = function(addCatalogueResult) {
         dbConnection.query('INSERT INTO Directory SET ?', addCatalogueResult.catalogue, function(err, result) {
             if(err) {
-                console.log("B³¹d1: " + err);
                 addCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
                 self.emit("add-catalogue-invalid", addCatalogueResult);
                 return;

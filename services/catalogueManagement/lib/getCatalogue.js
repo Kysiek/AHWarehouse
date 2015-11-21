@@ -15,6 +15,7 @@ var GetCatalogueResult = function(user, catalogueId) {
         catalogueId: catalogueId,
         mainCatalogue: null,
         subCatalogues: [],
+        files: [],
         success: false,
         message: null
     }
@@ -106,6 +107,21 @@ var GetCatalogue = function(dbConnection) {
         }
 
     };
+    var getFilesInMainCatalogue = function (getCatalogueResult) {
+        dbConnection("SELECT * FROM Resource WHERE directoryId = ?",
+            [getCatalogueResult.mainCatalogue.id],
+            function (err, result) {
+                if(err) {
+                    getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                    self.emit("get-catalogue-invalid", getCatalogueResult);
+                    return;
+                }
+                getCatalogueResult.files = [];
+                for(var i = 0, x = rows.length; i < x; i++) {
+                    getCatalogueResult.files.push({id: rows[i].id, name: rows[i].name, mimeType: rows[i].mimetype});
+                }
+        });
+    };
     var getSubCatalogues = function(getCatalogueResult) {
 
         dbConnection.query("SELECT * FROM Directory WHERE rootPath LIKE '%,?]' OR rootPath LIKE '[?]'",
@@ -159,7 +175,8 @@ var GetCatalogue = function(dbConnection) {
                     type: config.ID_DIR_TYPE_MAP[getCatalogueResult.mainCatalogue.typeId],
                     readOnly: getCatalogueResult.mainCatalogue.readOnly == 0 ? false : true,
                     pathToDirectory: getCatalogueResult.pathToCatalogue,
-                    subDirectories: getCatalogueResult.subCatalogues
+                    subDirectories: getCatalogueResult.subCatalogues,
+                    files: getCatalogueResult.files
                 },
                 message : getCatalogueResult.message,
                 success: getCatalogueResult.success
