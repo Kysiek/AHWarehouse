@@ -7,6 +7,7 @@ var util = require("util");
 var AddCatalogue = require("./lib/addCatalogue");
 var GetCatalogue = require("./lib/getCatalogue");
 var AddPermission = require("./lib/addPermission");
+var UploadFile = require("./lib/uploadFile");
 var assert = require("assert");
 
 var CatalogueManagement = function (connection) {
@@ -18,10 +19,10 @@ var CatalogueManagement = function (connection) {
 
 
         addCatalogue.on("added-catalogue-ok", function (addCatalogueResult) {
-            self.emit("added-catalogue-ok", addCatalogueResult)
+            self.emit("added-catalogue-ok", addCatalogueResult);
         });
         addCatalogue.on("added-catalogue-not-ok", function (addCatalogueResult) {
-            self.emit("added-catalogue-not-ok", addCatalogueResult)
+            self.emit("added-catalogue-not-ok", addCatalogueResult);
         });
         addCatalogue.add({name: name, parentId: parentId, type: type}, user, next);
     };
@@ -30,10 +31,10 @@ var CatalogueManagement = function (connection) {
 
 
         getCatalogue.on("get-catalogue-ok", function (getCatalogueResult) {
-            self.emit("get-catalogue-ok", getCatalogueResult)
+            self.emit("get-catalogue-ok", getCatalogueResult);
         });
         getCatalogue.on("get-catalogue-not-ok", function (getCatalogueResult) {
-            self.emit("get-catalogue-not-ok", getCatalogueResult)
+            self.emit("get-catalogue-not-ok", getCatalogueResult);
         });
         getCatalogue.get(user, catalogueId, next);
     };
@@ -42,13 +43,24 @@ var CatalogueManagement = function (connection) {
 
 
         addPermission.on("access-ok", function (addPermissionResult) {
-            self.emit("access-ok", addPermissionResult)
+            self.emit("access-ok", addPermissionResult);
         });
         addPermission.on("access-not-ok", function (addPermissionResult) {
-            self.emit("access-not-ok", addPermissionResult)
+            self.emit("access-not-ok", addPermissionResult);
         });
         addPermission.add(username, catalogueId, next);
-    }
+    };
+
+    self.uploadFile = function(user, name, catalogueId, mimeType, next) {
+        var uploadFile = new UploadFile(connection);
+        uploadFile.on("upload-ok", function (uploadFileResult) {
+            self.emit("upload-ok", uploadFileResult);
+        });
+        uploadFile.on("upload-not-ok", function (uploadFileResult) {
+            self.emit("upload-not-ok", uploadFileResult);
+        });
+        uploadFile.upload(user, {name: name, catalogueId: catalogueId, mimeType: mimeType}, next);
+    };
 };
 
 

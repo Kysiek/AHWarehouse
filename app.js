@@ -139,20 +139,26 @@ catalogueManagementRoute.route('/:catalogueId')
     });
 catalogueManagementRoute.route('/:catalogueId/upload/')
     .post(ensureAuthenticated, function (req,res) {
-        console.log(req.params.catalogueId);
-        var fstream;
         req.pipe(req.busboy);
         req.busboy.on('file', function (fieldname, file, filename) {
             console.log("Uploading: " + filename);
+            var mimeType = req.headers["mimetype"];
+            catalogueManagement.uploadFile(req.user, filename, req.params.catalogueId, mimeType, function(err, result) {
+                if(result.success) {
 
-            //Path where image will be uploaded
-
-            fstream = fs.createWriteStream(__dirname + '/../public/' + filename);
-            file.pipe(fstream);
-            fstream.on('close', function () {
-                console.log("Upload Finished of " + filename);
-                res.redirect('back');           //where to go next
+                    var fstream = fs.createWriteStream(__dirname + '/../public/' + filename);
+                    file.pipe(fstream);
+                    fstream.on('close', function () {
+                        console.log("Upload Finished of " + filename);
+                        res.status(200).end();
+                    });
+                } else {
+                    console.log("Uploading failed: " +  result.message);
+                    res.status(500).json({message: result.message});
+                }
             });
+
+
         });
     });
 catalogueManagementRoute.route('/access/grant')

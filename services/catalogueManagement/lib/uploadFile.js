@@ -7,10 +7,12 @@ var Emitter = require("events").EventEmitter;
 var config = require("../../../config/config");
 var util = require("util");
 
-var UploadFileResult = function(user, catalogueId) {
+var UploadFileResult = function(user, args) {
     return {
         user: user,
-        catalogue: catalogueId,
+        args: args,
+        catalogue: null,
+        resource: null,
         success: false,
         message: null
     }
@@ -25,8 +27,14 @@ var UploadFile = function(dbConnection) {
         if(!uploadFileResult.user) {
             uploadFileResult.message = "Pole uzytkownik nie moze byc puste";
             self.emit("upload-invalid", uploadFileResult);
-        } else if(!uploadFileResult.catalogue) {
+        } else if(!uploadFileResult.args.catalogueId) {
             uploadFileResult.message = "Nie podano id katalogu";
+            self.emit("upload-invalid", uploadFileResult);
+        } else if(!uploadFileResult.args.name) {
+            uploadFileResult.message = "Nie podano nazwy pliku";
+            self.emit("upload-invalid", uploadFileResult);
+        } else if(!uploadFileResult.args.mimeType) {
+            uploadFileResult.message = "Nie podano mime type";
             self.emit("upload-invalid", uploadFileResult);
         } else {
             self.emit("arguments-ok", uploadFileResult);
@@ -34,10 +42,11 @@ var UploadFile = function(dbConnection) {
     };
     var checkCatalogueExist = function(uploadFileResult) {
         dbConnection.query('SELECT * FROM Directory WHERE id = ?',
-            [uploadFileResult.catalogue],
+            [uploadFileResult.args.catalogueId],
             function (err, rows) {
                 if(err) {
                     uploadFileResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                    console.log(err);
                     self.emit("upload-invalid", uploadFileResult);
                     return;
                 }
@@ -68,6 +77,7 @@ var UploadFile = function(dbConnection) {
                 function (err, rows) {
                     if(err) {
                         uploadFileResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                        console.log(err);
                         self.emit("upload-invalid", uploadFileResult);
                         return;
                     }
@@ -82,32 +92,58 @@ var UploadFile = function(dbConnection) {
         }
     };
 
-    //Tutaj skończyłem <- dopisz to niżej. Trzeba tutaj mieć nazwę pliku, aby wstawić to do bazy.
-    var insertResourceIntoDb = function(uploadFileResult) {
-        dbConnection.query('INSERT INTO Resource SET ?', {userId: addPermissionResult.user.id, directoryId: addPermissionResult.catalogue.id}, function(err, result) {
+    var checkFileAlreadyExist = function(uploadFileResult) {
+        dbConnection.query('SELECT * FROM Resource WHERE name = ? AND directoryId = ?', [uploadFileResult.args.name, uploadFileResult.catalogue.id], function (err, rows) {
             if(err) {
-                addPermissionResult.message = "Blad serwera. Idz opierdol tego co go robil";
-                self.emit("upload-invalid", addPermissionResult);
+                uploadFileResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                console.log(err);
+                self.emit("upload-invalid", uploadFileResult);
                 return;
             }
-            self.emit("access-granted", addPermissionResult);
+            if(rows === undefined || rows.length === 0) {
+                self.emit("file-not-exist", uploadFileResult);
+            }  else {
+                uploadFileResult.resource = rows[0];
+                self.emit("resource-inserted", uploadFileResult);
+            }
+        });
+    };
+    var insertResourceIntoDb = function(uploadFileResult) {
+        dbConnection.query('INSERT INTO Resource SET ?', {ownerUserId: uploadFileResult.user.id, directoryId: uploadFileResult.catalogue.id, name: uploadFileResult.args.name, mimetype: uploadFileResult.args.mimeType}, function(err, result) {
+            if(err) {
+                uploadFileResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                console.log(err);
+                self.emit("upload-invalid", uploadFileResult);
+                return;
+            }
+            dbConnection.query('SELECT * FROM Resource WHERE id = ?', [result.insertId], function (err, rows) {
+                if(err) {
+                    uploadFileResult.message = "Blad serwera. Idz opierdol tego co go robil";
+                    console.log(err);
+                    self.emit("upload-invalid", uploadFileResult);
+                    return;
+                }
+                uploadFileResult.resource = rows[0];
+                self.emit("resource-inserted", uploadFileResult);
+            });
+
         });
     };
 
-    var grantPermissionOk = function(addPermissionResult) {
-        addPermissionResult.message = "Dostęp dodany pomyslnie!";
-        addPermissionResult.success = true;
-        self.emit("access-ok", addPermissionResult);
+    var UploadFileOk = function(uploadFileResult) {
+        uploadFileResult.message = "Plik dodany pomyslnie!";
+        uploadFileResult.success = true;
+        self.emit("upload-ok", uploadFileResult);
         if(continueWith) {
-            continueWith(null, addPermissionResult);
+            continueWith(null, uploadFileResult);
         }
     };
 
-    var grantPermissionNotOk = function(addPermissionResult) {
-        addPermissionResult.success = false;
-        self.emit("access-not-ok", addPermissionResult);
+    var UploadFileNotOk = function(uploadFileResult) {
+        uploadFileResult.success = false;
+        self.emit("upload-not-ok", uploadFileResult);
         if(continueWith) {
-            continueWith(null, addPermissionResult);
+            continueWith(null, uploadFileResult);
         }
     };
 
@@ -116,16 +152,15 @@ var UploadFile = function(dbConnection) {
     self.on("arguments-ok", checkCatalogueExist);
     self.on("catalogue-ok", checkCatalogueNotReadOnly);
     self.on("catalogue-not-read-only", checkUserHasAccess);
-    self.on("user-has-access", insertResourceIntoDb);
-    self.on("user-not-owner-ok", checkUserAlreadyHasAccess);
-    self.on("user-does-not-have-access", grantAccess);
-    self.on("access-granted", grantPermissionOk);
+    self.on("user-has-access", checkFileAlreadyExist);
+    self.on("file-not-exist", insertResourceIntoDb);
+    self.on("resource-inserted", UploadFileOk);
 
-    self.on("upload-invalid", grantPermissionNotOk);
+    self.on("upload-invalid", UploadFileNotOk);
 
-    self.upload = function (user, catalogueId, next) {
+    self.upload = function (user, args, next) {
         continueWith = next;
-        var uploadFileResult = new UploadFileResult(user, catalogueId);
+        var uploadFileResult = new UploadFileResult(user, args);
         self.emit("upload-file-request-received", uploadFileResult);
     };
 };
