@@ -71,6 +71,8 @@ var UploadFile = function(dbConnection) {
     var checkUserHasAccess = function(uploadFileResult) {
         if(config.ID_DIR_TYPE_MAP[uploadFileResult.catalogue.typeId] === config.PUBLIC_DIR_STRING) {
             self.emit("user-has-access", uploadFileResult);
+        } else if(uploadFileResult.catalogue.ownerUserId == uploadFileResult.user.id) {
+            self.emit("user-has-access", uploadFileResult);
         } else {
             dbConnection.query('SELECT * FROM AccessToDirectory WHERE userId = ? AND directoryId = ?',
                 [uploadFileResult.user.id,uploadFileResult.catalogue.id],

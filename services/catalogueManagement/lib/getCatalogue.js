@@ -108,9 +108,9 @@ var GetCatalogue = function(dbConnection) {
 
     };
     var getFilesInMainCatalogue = function (getCatalogueResult) {
-        dbConnection("SELECT * FROM Resource WHERE directoryId = ?",
+        dbConnection.query("SELECT * FROM Resource WHERE directoryId = ?",
             [getCatalogueResult.mainCatalogue.id],
-            function (err, result) {
+            function (err, rows) {
                 if(err) {
                     getCatalogueResult.message = "Blad serwera. Idz opierdol tego co go robil";
                     self.emit("get-catalogue-invalid", getCatalogueResult);
@@ -120,6 +120,7 @@ var GetCatalogue = function(dbConnection) {
                 for(var i = 0, x = rows.length; i < x; i++) {
                     getCatalogueResult.files.push({id: rows[i].id, name: rows[i].name, mimeType: rows[i].mimetype});
                 }
+                self.emit("got-files",getCatalogueResult);
         });
     };
     var getSubCatalogues = function(getCatalogueResult) {
@@ -197,7 +198,8 @@ var GetCatalogue = function(dbConnection) {
     self.on("arguments-ok", getMainCatalogueFromDB);
     self.on("main-catalogue-got", checkUserHasAccess);
     self.on("user-has-access", getRootPath);
-    self.on("path-to-catalogue-got", getSubCatalogues);
+    self.on("path-to-catalogue-got", getFilesInMainCatalogue);
+    self.on("got-files", getSubCatalogues);
     self.on("subcatalogues-got", getCatalogueOk);
 
     self.on("get-catalogue-invalid", getCatalogueNotOk);
