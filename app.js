@@ -13,7 +13,8 @@ var express = require('express'),
     fs = require('fs-extra'),
     busboy = require('connect-busboy'), //middleware for form/file upload
     path = require('path'),
-    mkdirp = require('mkdirp');
+    mkdirp = require('mkdirp'),
+    mime = require('mime');
 
 var app = express();
 var membership;
@@ -162,6 +163,24 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
             });
 
 
+        });
+    });
+catalogueManagementRoute.route('/:catalogueId/file/:fileId')
+    .get(ensureAuthenticated, function (req,res) {
+        var catalogueId =  req.params.catalogueId;
+        catalogueManagement.downloadFile(req.user, req.params.fileId,catalogueId, function(err,result){
+            if(result.success) {
+                var file = __dirname + '/../public/' + catalogueId + "/" + result.resource.name;
+                var filename = path.basename(file);
+                var mimetype = mime.lookup(file);
+                res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+                res.setHeader('Content-type', mimetype);
+                res.setHeader('mimetype', result.resource.mimetype);
+                var filestream = fs.createReadStream(file);
+                filestream.pipe(res);
+            } else {
+                res.status(500).json({message: result.message});
+            }
         });
     });
 catalogueManagementRoute.route('/access/grant')
