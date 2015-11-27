@@ -142,16 +142,22 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
     .post(ensureAuthenticated, function (req,res) {
         req.pipe(req.busboy);
         req.busboy.on('file', function (fieldname, file, filename) {
-            console.log("Uploading: " + filename);
             var mimeType = req.headers["mimetype"];
-            catalogueManagement.uploadFile(req.user, filename, req.params.catalogueId, mimeType, function(err, result) {
+            var fileName = req.headers["filename"];
+            if(!fileName) {
+                console.log("Uploading failed: " +  "Nie podano nazwy pliku");
+                res.status(500).json({message: "Nie podano nazwy pliku"});
+                return;
+            }
+            console.log("Uploading: " + fileName);
+            catalogueManagement.uploadFile(req.user, fileName, req.params.catalogueId, mimeType, function(err, result) {
                 if(result.success) {
                     var cataloguePath = __dirname + '/../public/' + req.params.catalogueId + "/";
                     mkdirp(cataloguePath, function(err) {
-                        var fstream = fs.createWriteStream(cataloguePath + filename);
+                        var fstream = fs.createWriteStream(cataloguePath + fileName);
                         file.pipe(fstream);
                         fstream.on('close', function () {
-                            console.log("Upload Finished of " + filename);
+                            console.log("Upload Finished of " + fileName);
                             res.status(200).end();
                         });
                     });
@@ -160,8 +166,6 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
                     res.status(500).json({message: result.message});
                 }
             });
-
-
         });
     });
 catalogueManagementRoute.route('/access/grant')
@@ -174,6 +178,13 @@ catalogueManagementRoute.route('/access/grant')
                 res.status(500).json({message: result.message});
             }
         });
+    });
+catalogueManagementRoute.route('/download/:catalogueId/:fileId')
+    .get(ensureAuthenticated, function(req, res) {
+        var catalogueId = req.params.catalogueId,
+            fileId = req.params.fileId;
+
+
     });
 app.use('/user', userRouter);
 app.use('/directory', catalogueManagementRoute);
