@@ -8,6 +8,7 @@ var AddCatalogue = require("./lib/addCatalogue");
 var GetCatalogue = require("./lib/getCatalogue");
 var AddPermission = require("./lib/addPermission");
 var UploadFile = require("./lib/uploadFile");
+var DownloadFile = require("./lib/downloadFile");
 var assert = require("assert");
 
 var CatalogueManagement = function (connection) {
@@ -60,6 +61,16 @@ var CatalogueManagement = function (connection) {
             self.emit("upload-not-ok", uploadFileResult);
         });
         uploadFile.upload(user, {name: name, catalogueId: catalogueId, mimeType: mimeType}, next);
+    };
+    self.downloadFile = function(user, fileId, catalogueId, next) {
+        var downloadFile = new DownloadFile(connection);
+        downloadFile.on("download-ok", function (downloadFileResult) {
+            self.emit("download-ok", downloadFileResult);
+        });
+        downloadFile.on("download-not-ok", function (downloadFileResult) {
+            self.emit("download-not-ok", downloadFileResult);
+        });
+        downloadFile.download(user, {fileId: fileId, catalogueId: catalogueId}, next);
     };
 };
 
