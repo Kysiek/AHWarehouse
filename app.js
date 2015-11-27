@@ -170,6 +170,7 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
             });
         });
     });
+
 catalogueManagementRoute.route('/:catalogueId/file/:fileId')
     .get(ensureAuthenticated, function (req,res) {
         var catalogueId =  req.params.catalogueId;
@@ -183,6 +184,17 @@ catalogueManagementRoute.route('/:catalogueId/file/:fileId')
                 res.setHeader('mimetype', result.resource.mimetype);
                 var filestream = fs.createReadStream(file);
                 filestream.pipe(res);
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
+catalogueManagementRoute.route('/:catalogueId/file/:fileId')
+    .delete(ensureAuthenticated, function (req,res) {
+        var catalogueId =  req.params.catalogueId;
+        catalogueManagement.deleteFile(req.user, req.params.fileId,catalogueId, function(err,result){
+            if(result.success) {
+                res.status(200).end();
             } else {
                 res.status(500).json({message: result.message});
             }
