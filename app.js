@@ -143,6 +143,7 @@ catalogueManagementRoute.route('/:catalogueId/upload/')
     .post(ensureAuthenticated, function (req,res) {
         req.pipe(req.busboy);
         req.busboy.on('file', function (fieldname, file, filename) {
+            console.log(filename);
             var mimeType = req.headers["mimetype"];
             var fileName = req.headers["filename"];
             if(!fileName) {
