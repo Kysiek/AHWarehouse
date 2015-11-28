@@ -8,6 +8,7 @@ var AddCatalogue = require("./lib/addCatalogue");
 var GetCatalogue = require("./lib/getCatalogue");
 var AddPermission = require("./lib/addPermission");
 var DeleteFile = require("./lib/deleteFile");
+var DeleteCatalogue = require("./lib/deleteCatalogue");
 var UploadFile = require("./lib/uploadFile");
 var DownloadFile = require("./lib/downloadFile");
 var assert = require("assert");
@@ -82,6 +83,16 @@ var CatalogueManagement = function (connection) {
             self.emit("delete-not-ok", deleteFileResult);
         });
         deleteFile.delete(user, {fileId: fileId, catalogueId: catalogueId}, next);
+    };
+    self.deleteCatalogue = function(user, catalogueId, next) {
+        var deleteCatalogue = new DeleteCatalogue(connection);
+        deleteCatalogue.on("delete-catalogue-ok", function (deleteCatalogueResult) {
+            self.emit("delete-catalogue-ok", deleteCatalogueResult);
+        });
+        deleteCatalogue.on("delete-catalogue-not-ok", function (deleteCatalogueResult) {
+            self.emit("delete-catalogue-not-ok", deleteCatalogueResult);
+        });
+        deleteCatalogue.delete(user, {catalogueId: catalogueId}, next);
     };
 };
 

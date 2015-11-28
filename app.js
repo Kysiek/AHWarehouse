@@ -200,6 +200,17 @@ catalogueManagementRoute.route('/:catalogueId/file/:fileId')
             }
         });
     });
+catalogueManagementRoute.route('/:catalogueId')
+    .delete(ensureAuthenticated, function (req,res) {
+        var catalogueId =  req.params.catalogueId;
+        catalogueManagement.deleteCatalogue(req.user,catalogueId, function(err,result){
+            if(result.success) {
+                res.status(200).end();
+            } else {
+                res.status(500).json({message: result.message});
+            }
+        });
+    });
 catalogueManagementRoute.route('/access/grant')
     .post(ensureAuthenticated, function(req, res) {
         var bodyArgs = req.body;

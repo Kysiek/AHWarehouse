@@ -98,8 +98,8 @@ CREATE TABLE IF NOT EXISTS `AHWarehouse`.`AccessToDirectory` (
   CONSTRAINT `FK_Access_Directory`
     FOREIGN KEY (`directoryId`)
     REFERENCES `AHWarehouse`.`Directory` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -114,7 +114,14 @@ CREATE TABLE IF NOT EXISTS `AHWarehouse`.`Resource` (
   `directoryId` INT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `mimetype` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`id`))
+  PRIMARY KEY (`id`),
+  INDEX `FK_Resource_Directory_idx` (`directoryId` ASC),
+  CONSTRAINT `FK_Resource_Directory`
+      FOREIGN KEY (`directoryId`)
+      REFERENCES `AHWarehouse`.`Directory` (`id`)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+  )
 ENGINE = InnoDB;
 
 
